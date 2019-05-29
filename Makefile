@@ -11,7 +11,7 @@ test = t/
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(LUA_LIB_DIR)/resty/nginx
-	$(INSTALL) -m664 lib/resty/* $(DESTDIR)$(LUA_LIB_DIR)/resty
+	$(INSTALL) -m664 lib/resty/*.lua $(DESTDIR)$(LUA_LIB_DIR)/resty
 
 test:
 	PATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r $(test)
