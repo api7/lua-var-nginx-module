@@ -65,6 +65,16 @@ ngx_http_lua_var_ffi_host(ngx_http_request_t *r, ngx_str_t *host)
 }
 
 
+ngx_int_t
+ngx_http_lua_var_ffi_remote_addr(ngx_http_request_t *r, ngx_str_t *remote_addr)
+{
+    remote_addr->len = r->connection->addr_text.len;
+    remote_addr->data = r->connection->addr_text.data;
+
+    return NGX_OK;
+}
+
+
 /**
  * only for checking
  */
