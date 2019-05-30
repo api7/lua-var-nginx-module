@@ -14,6 +14,30 @@ Table of Contents
     * [fetch](#fetch)
 * [TODO](#todo)
 
+
+Install
+=======
+
+Compiles the nginx c module to OpenResty:
+
+```shell
+./configure --prefix=/opt/openresty \
+         --add-module=/path/to/lua-var-nginx-module
+```
+
+Install the Lua source code, there are two ways:
+
+```shell
+luarocks install lua-resty-ngxvar
+```
+
+Or we can copy the source lua file to specified directory which OpenResty can
+load it normally.
+
+```shell
+make install LUA_LIB_DIR=/opt/openresty/lualib/resty/
+```
+
 Method
 ======
 

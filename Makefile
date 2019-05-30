@@ -2,7 +2,7 @@ OPENRESTY_PREFIX=/usr/local/openresty
 
 PREFIX ?= /usr/local
 LUA_INCLUDE_DIR ?= $(PREFIX)/include
-LUA_LIB_DIR ?=     $(PREFIX)/lib/lua/$(LUA_VERSION)
+LUA_LIB_DIR ?=     $(PREFIX)/lualib/$(LUA_VERSION)
 INSTALL ?= install
 
 test = t/
@@ -10,7 +10,6 @@ test = t/
 .PHONY: all test install
 
 install:
-	$(INSTALL) -d $(DESTDIR)$(LUA_LIB_DIR)/resty/nginx
 	$(INSTALL) -m664 lib/resty/*.lua $(DESTDIR)$(LUA_LIB_DIR)/resty
 
 test:

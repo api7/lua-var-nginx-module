@@ -1,12 +1,12 @@
 package = "lua-resty-ngxvar"
 version = "0.1-0"
 source = {
-   url = "git://github.com/iresty/lua-resty-ngxvar",
+   url = "git://github.com/iresty/lua-var-nginx-module",
    tag = "v0.1"
 }
 description = {
    summary = "Fetch nginx variable by FFI way for OpenResty which is faster",
-   homepage = "https://github.com/iresty/lua-resty-ngxvar",
+   homepage = "https://github.com/iresty/lua-var-nginx-module",
    license = "Apache License 2.0",
    maintainer = "Yuansheng Wang <membphis@gmail.com>"
 }
