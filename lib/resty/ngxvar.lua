@@ -2,21 +2,24 @@ local get_request = require("resty.core.base").get_request
 local ffi = require("ffi")
 local C = ffi.C
 local ffi_string = ffi.string
+local ngx = ngx
 local ngx_var = ngx.var
 local str_t = ffi.new("ngx_str_t[1]")
 local pcall = pcall
 
 
-local ngxvar_patched
-
-
 ffi.cdef([[
 int ngx_http_lua_var_ffi_uri(ngx_http_request_t *r, ngx_str_t *uri);
 int ngx_http_lua_var_ffi_host(ngx_http_request_t *r, ngx_str_t *host);
+int ngx_http_lua_var_ffi_test();
 ]])
 
 
-local _M = {version = 0.1}
+local var_patched = pcall(function() return C.ngx_http_lua_var_ffi_test() end)
+local _M = {
+    _version = 0.1,
+    method = ngx.req.get_method,
+}
 
 
 function _M.uri()
@@ -41,20 +44,15 @@ function _M.host()
 end
 
 
+function _M.status()
+    return ngx.status
+end
+
+
 return function (name)
     local method = _M[name]
 
-    if ngxvar_patched == nil and method then
-        local val
-        ngxvar_patched, val = pcall(method)
-        if ngxvar_patched then
-            return val
-        end
-
-        return ngx_var[name]
-    end
-
-    if not ngxvar_patched or not method then
+    if not var_patched or not method then
         return ngx_var[name]
     end
 

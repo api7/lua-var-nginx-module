@@ -63,3 +63,13 @@ ngx_http_lua_var_ffi_host(ngx_http_request_t *r, ngx_str_t *host)
 
     return NGX_OK;
 }
+
+
+/**
+ * only for checking
+ */
+ngx_int_t
+ngx_http_lua_var_ffi_test()
+{
+    return 0;
+}
