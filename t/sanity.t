@@ -23,7 +23,7 @@ __DATA__
     location /t {
         content_by_lua_block {
             local var = require("resty.ngxvar")
-            ngx.say(var("uri"))
+            ngx.say(var.fetch("uri"))
         }
     }
 --- request
@@ -41,7 +41,7 @@ GET /t/test/bar
     location /t {
         content_by_lua_block {
             local var = require("resty.ngxvar")
-            ngx.say(var("host"))
+            ngx.say(var.fetch("host"))
         }
     }
 --- request
@@ -64,7 +64,8 @@ foo.com
         }
         log_by_lua_block {
             local var = require("resty.ngxvar")
-            ngx.log(ngx.ERR, var("status"), " type: ", type(var("status")))
+            ngx.log(ngx.ERR, var.fetch("status"),
+                    " type: ", type(var.fetch("status")))
         }
     }
 --- request
@@ -81,8 +82,8 @@ GET /t
     location /t {
         content_by_lua_block {
             local var = require("resty.ngxvar")
-            local req = var("_request")
-            ngx.say(var("host", req))
+            local req = var.fetch("_request")
+            ngx.say(var.fetch("host", req))
         }
     }
 --- request
@@ -102,7 +103,7 @@ foo.com
     location /t {
         content_by_lua_block {
             local var = require("resty.ngxvar")
-            ngx.say(var("remote_addr"))
+            ngx.say(var.fetch("remote_addr"))
         }
     }
 --- request

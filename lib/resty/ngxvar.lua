@@ -18,23 +18,12 @@ int ngx_http_lua_var_ffi_remote_addr(ngx_http_request_t *r,
 
 
 local var_patched = pcall(function() return C.ngx_http_lua_var_ffi_test() end)
-local _M = {
-    _version = 0.1,
+local vars = {
     method = ngx.req.get_method,
 }
 
 
-function _M._request()
-    local r = get_request()
-    if not r then
-        return false, "no request found"
-    end
-
-    return r
-end
-
-
-function _M.uri(r)
+function vars.uri(r)
     r = r or get_request()
     if not r then
         return false, "no request found"
@@ -45,7 +34,7 @@ function _M.uri(r)
 end
 
 
-function _M.host(r)
+function vars.host(r)
     r = r or get_request()
     if not r then
         return false, "no request found"
@@ -56,12 +45,12 @@ function _M.host(r)
 end
 
 
-function _M.status()
+function vars.status()
     return ngx.status
 end
 
 
-function _M.remote_addr(r)
+function vars.remote_addr(r)
     r = r or get_request()
     if not r then
         return false, "no request found"
@@ -72,8 +61,23 @@ function _M.remote_addr(r)
 end
 
 
-return function (name, request)
-    local method = _M[name]
+local _M = {
+    _version = 0.1,
+}
+
+
+function _M.request()
+    local r = get_request()
+    if not r then
+        return false, "no request found"
+    end
+
+    return r
+end
+
+
+function _M.fetch(name, request)
+    local method = vars[name]
 
     if not var_patched or not method then
         return ngx_var[name]
@@ -81,3 +85,6 @@ return function (name, request)
 
     return method(request)
 end
+
+
+return _M
