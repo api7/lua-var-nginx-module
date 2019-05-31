@@ -6,6 +6,7 @@ local ngx = ngx
 local ngx_var = ngx.var
 local str_t = ffi.new("ngx_str_t[1]")
 local pcall = pcall
+local num_type = {}
 
 
 ffi.cdef([[
@@ -61,6 +62,14 @@ function vars.remote_addr(r)
 end
 
 
+for _, name in ipairs({"request_length", "bytes_sent"}) do
+    vars[name] = function ()
+        return tonumber(ngx_var[name])
+    end
+    num_type[name] = true
+end
+
+
 local _M = {
     _version = 0.1,
 }
@@ -80,6 +89,10 @@ function _M.fetch(name, request)
     local method = vars[name]
 
     if not var_patched or not method then
+        if num_type[name] then
+            return tonumber(ngx_var[name])
+        end
+
         return ngx_var[name]
     end
 
