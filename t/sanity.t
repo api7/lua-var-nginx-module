@@ -7,6 +7,8 @@ no_diff();
 no_long_string();
 
 our $HttpConfig = <<"_EOC_";
+    resolver ipv6=off local=on;
+
     lua_package_path "lib/?.lua;;";
     init_by_lua_block {
         require "resty.core"
@@ -136,3 +138,75 @@ GET /t
 qr/request_time: 0\.1\d{2} while logging request/
 --- response_body
 hit
+
+
+
+=== TEST 7: upstream request time
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        proxy_pass http://www.baidu.com/;
+        log_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.log(ngx.ERR, "upstream_response_time: ",
+                    var.fetch("upstream_response_time"))
+        }
+    }
+--- request
+GET /t
+--- error_log eval
+qr/upstream_response_time: 0\.\d+ while logging request/
+
+
+
+=== TEST 8: upstream header time
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        proxy_pass http://www.baidu.com/;
+        log_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.log(ngx.ERR, "upstream_header_time: ",
+                    var.fetch("upstream_header_time"))
+        }
+    }
+--- request
+GET /t
+--- error_log eval
+qr/upstream_header_time: 0\.\d+ while logging request/
+
+
+
+=== TEST 9: upstream connect time
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        proxy_pass http://www.baidu.com/;
+        log_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.log(ngx.ERR, "upstream_connect_time: ",
+                    var.fetch("upstream_connect_time"))
+        }
+    }
+--- request
+GET /t
+--- error_log eval
+qr/upstream_connect_time: 0\.\d+ while logging request/
+
+
+
+=== TEST 10: upstream request time (no upstream)
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        echo "hello";
+        log_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.log(ngx.ERR, "upstream_response_time: ",
+                    var.fetch("upstream_response_time"))
+        }
+    }
+--- request
+GET /t
+--- error_log
+upstream_response_time: nilnot found while logging request
