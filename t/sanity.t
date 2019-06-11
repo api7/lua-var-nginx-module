@@ -114,3 +114,25 @@ Host: foo.com
 [error]
 --- response_body
 127.0.0.1
+
+
+
+=== TEST 6: request_time
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            ngx.sleep(0.123)
+            ngx.say("hit")
+        }
+        log_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.log(ngx.ERR, "request_time: ", var.fetch("request_time"))
+        }
+    }
+--- request
+GET /t
+--- error_log eval
+qr/request_time: 0\.1\d{2} while logging request/
+--- response_body
+hit

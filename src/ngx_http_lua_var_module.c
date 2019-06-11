@@ -75,6 +75,24 @@ ngx_http_lua_var_ffi_remote_addr(ngx_http_request_t *r, ngx_str_t *remote_addr)
 }
 
 
+ngx_int_t
+ngx_http_variable_request_time(ngx_http_request_t *r, unsigned char *buf)
+{
+    ngx_time_t      *tp;
+    ngx_msec_int_t   ms;
+    int              len;
+
+    tp = ngx_timeofday();
+
+    ms = (ngx_msec_int_t)
+             ((tp->sec - r->start_sec) * 1000 + (tp->msec - r->start_msec));
+    ms = ngx_max(ms, 0);
+
+    len = ngx_sprintf(buf, "%T.%03M", (time_t) ms / 1000, ms % 1000) - buf;
+    return len;
+}
+
+
 /**
  * only for checking
  */
