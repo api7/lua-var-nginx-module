@@ -76,7 +76,7 @@ ngx_http_lua_var_ffi_remote_addr(ngx_http_request_t *r, ngx_str_t *remote_addr)
 
 
 ngx_int_t
-ngx_http_variable_request_time(ngx_http_request_t *r, unsigned char *buf)
+ngx_http_lua_var_ffi_request_time(ngx_http_request_t *r, unsigned char *buf)
 {
     ngx_time_t      *tp;
     ngx_msec_int_t   ms;
@@ -89,6 +89,58 @@ ngx_http_variable_request_time(ngx_http_request_t *r, unsigned char *buf)
     ms = ngx_max(ms, 0);
 
     len = ngx_sprintf(buf, "%T.%03M", (time_t) ms / 1000, ms % 1000) - buf;
+    return len;
+}
+
+
+ngx_int_t
+ngx_http_lua_var_ffi_upstream_response_time(ngx_http_request_t *r,
+    unsigned char *buf, int type)
+{
+    u_char                     *p;
+    size_t                      len;
+    ngx_uint_t                  i;
+    ngx_msec_int_t              ms, total_ms;
+    ngx_http_upstream_state_t  *state;
+
+    if (r->upstream_states == NULL || r->upstream_states->nelts == 0) {
+        return NGX_ERROR;
+    }
+
+    i = 0;
+    total_ms = 0;
+    state = r->upstream_states->elts;
+
+    for ( ;; ) {
+        if (state[i].status) {
+
+            if (type == 1 && state[i].header_time != (ngx_msec_t) -1) {
+                ms = state[i].header_time;
+
+            } else if (type == 2 && state[i].connect_time != (ngx_msec_t) -1) {
+                ms = state[i].connect_time;
+
+            } else {
+                ms = state[i].response_time;
+            }
+
+            ms = ngx_max(ms, 0);
+            total_ms = total_ms + ms;
+        }
+
+        if (++i == r->upstream_states->nelts) {
+            break;
+        }
+
+        if (!state[i].peer) {
+            if (++i == r->upstream_states->nelts) {
+                break;
+            }
+        }
+    }
+
+    len = ngx_sprintf(buf, "%T.%03M", (time_t) total_ms / 1000,
+                      total_ms % 1000) - buf;
     return len;
 }
 

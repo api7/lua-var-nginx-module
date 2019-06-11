@@ -17,7 +17,10 @@ int ngx_http_lua_var_ffi_host(ngx_http_request_t *r, ngx_str_t *host);
 int ngx_http_lua_var_ffi_test();
 int ngx_http_lua_var_ffi_remote_addr(ngx_http_request_t *r,
     ngx_str_t *remote_addr);
-int ngx_http_variable_request_time(ngx_http_request_t *r, unsigned char *buf);
+int ngx_http_lua_var_ffi_request_time(ngx_http_request_t *r,
+    unsigned char *buf);
+int ngx_http_lua_var_ffi_upstream_response_time(ngx_http_request_t *r,
+    unsigned char *buf, int type);
 ]])
 
 
@@ -30,7 +33,7 @@ local vars = {
 function vars.uri(r)
     r = r or get_request()
     if not r then
-        return false, "no request found"
+        return nil, "no request found"
     end
 
     C.ngx_http_lua_var_ffi_uri(r, str_t)
@@ -41,7 +44,7 @@ end
 function vars.host(r)
     r = r or get_request()
     if not r then
-        return false, "no request found"
+        return nil, "no request found"
     end
 
     C.ngx_http_lua_var_ffi_host(r, str_t)
@@ -57,7 +60,7 @@ end
 function vars.remote_addr(r)
     r = r or get_request()
     if not r then
-        return false, "no request found"
+        return nil, "no request found"
     end
 
     C.ngx_http_lua_var_ffi_remote_addr(r, str_t)
@@ -68,10 +71,10 @@ end
 function vars.request_time(r)
     r = r or get_request()
     if not r then
-        return false, "no request found"
+        return nil, "no request found"
     end
 
-    local len = C.ngx_http_variable_request_time(r, str_buf)
+    local len = C.ngx_http_lua_var_ffi_request_time(r, str_buf)
     if len == 0 then
         return 0
     end
@@ -79,6 +82,43 @@ function vars.request_time(r)
     return tonumber(ffi_string(str_buf, len))
 end
 num_type.request_time = true
+
+
+local function upstream_response_time(r, typ)
+    r = r or get_request()
+    if not r then
+        return nil, "no request found"
+    end
+
+    local len = C.ngx_http_lua_var_ffi_upstream_response_time(r, str_buf, typ)
+    if len < 0 then
+        return nil, "not found"
+    end
+
+    if len == 0 then
+        return 0
+    end
+
+    return tonumber(ffi_string(str_buf, len))
+end
+
+
+vars.upstream_response_time = function (r)
+    return upstream_response_time(r, 0)
+end
+num_type.upstream_response_time = true
+
+
+vars.upstream_header_time = function (r)
+    return upstream_response_time(r, 1)
+end
+num_type.upstream_header_time = true
+
+
+vars.upstream_connect_time = function (r)
+    return upstream_response_time(r, 2)
+end
+num_type.upstream_connect_time = true
 
 
 for _, name in ipairs({"request_length", "bytes_sent"}) do
@@ -97,7 +137,7 @@ local _M = {
 function _M.request()
     local r = get_request()
     if not r then
-        return false, "no request found"
+        return nil, "no request found"
     end
 
     return r
