@@ -1,8 +1,8 @@
 package = "lua-resty-ngxvar"
-version = "0.2-0"
+version = "0.3-0"
 source = {
    url = "git://github.com/iresty/lua-var-nginx-module",
-   tag = "v0.2"
+   tag = "v0.3"
 }
 description = {
    summary = "Fetch nginx variable by FFI way for OpenResty which is faster",
