@@ -1,4 +1,5 @@
 local get_request = require("resty.core.base").get_request
+local get_string_buf = require("resty.core.base").get_string_buf
 local ffi = require("ffi")
 local C = ffi.C
 local ffi_string = ffi.string
@@ -7,6 +8,7 @@ local ngx_var = ngx.var
 local str_t = ffi.new("ngx_str_t[1]")
 local pcall = pcall
 local num_type = {}
+local str_buf = get_string_buf(1024)
 
 
 ffi.cdef([[
@@ -15,6 +17,7 @@ int ngx_http_lua_var_ffi_host(ngx_http_request_t *r, ngx_str_t *host);
 int ngx_http_lua_var_ffi_test();
 int ngx_http_lua_var_ffi_remote_addr(ngx_http_request_t *r,
     ngx_str_t *remote_addr);
+int ngx_http_variable_request_time(ngx_http_request_t *r, unsigned char *buf);
 ]])
 
 
@@ -60,6 +63,22 @@ function vars.remote_addr(r)
     C.ngx_http_lua_var_ffi_remote_addr(r, str_t)
     return ffi_string(str_t[0].data, str_t[0].len)
 end
+
+
+function vars.request_time(r)
+    r = r or get_request()
+    if not r then
+        return false, "no request found"
+    end
+
+    local len = C.ngx_http_variable_request_time(r, str_buf)
+    if len == 0 then
+        return 0
+    end
+
+    return tonumber(ffi_string(str_buf, len))
+end
+num_type.request_time = true
 
 
 for _, name in ipairs({"request_length", "bytes_sent"}) do
