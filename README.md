@@ -35,7 +35,7 @@ Or we can copy the source lua file to specified directory which OpenResty can
 load it normally.
 
 ```shell
-make install LUA_LIB_DIR=/opt/openresty/lualib/resty/
+make install LUA_LIB_DIR=/opt/openresty/lualib/
 ```
 
 Method
