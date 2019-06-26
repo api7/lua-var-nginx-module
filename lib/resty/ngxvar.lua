@@ -21,6 +21,7 @@ int ngx_http_lua_var_ffi_request_time(ngx_http_request_t *r,
     unsigned char *buf);
 int ngx_http_lua_var_ffi_upstream_response_time(ngx_http_request_t *r,
     unsigned char *buf, int type);
+int ngx_http_lua_var_ffi_scheme(ngx_http_request_t *r, ngx_str_t *scheme);
 ]])
 
 
@@ -119,6 +120,17 @@ vars.upstream_connect_time = function (r)
     return upstream_response_time(r, 2)
 end
 num_type.upstream_connect_time = true
+
+
+function vars.scheme(r)
+    r = r or get_request()
+    if not r then
+        return nil, "no request found"
+    end
+
+    C.ngx_http_lua_var_ffi_scheme(r, str_t)
+    return ffi_string(str_t[0].data, str_t[0].len)
+end
 
 
 for _, name in ipairs({"request_length", "bytes_sent"}) do

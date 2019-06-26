@@ -210,3 +210,21 @@ qr/upstream_connect_time: 0\.\d+ while logging request/
 GET /t
 --- error_log
 upstream_response_time: nilnot found while logging request
+
+
+
+=== TEST 11: scheme
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.say(var.fetch("scheme"))
+        }
+    }
+--- request
+GET /t/test/bar
+--- no_error_log
+[error]
+--- response_body
+http

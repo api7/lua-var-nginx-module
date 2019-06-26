@@ -145,6 +145,27 @@ ngx_http_lua_var_ffi_upstream_response_time(ngx_http_request_t *r,
 }
 
 
+ngx_int_t
+ngx_http_lua_var_ffi_scheme(ngx_http_request_t *r, ngx_str_t *scheme)
+{
+#if (NGX_HTTP_SSL)
+
+    if (r->connection->ssl) {
+        scheme->len = sizeof("https") - 1;
+        scheme->data = (u_char *) "https";
+
+        return NGX_OK;
+    }
+
+#endif
+
+    scheme->len = sizeof("http") - 1;
+    scheme->data = (u_char *) "http";
+
+    return NGX_OK;
+}
+
+
 /**
  * only for checking
  */
