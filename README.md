@@ -60,7 +60,7 @@ Returns the Nginx variable value by name.
  location /t {
      content_by_lua_block {
          local var = require("resty.ngxvar")
-         local req = var.fetch("_request")
+         local req = var.request()
 
          ngx.say(var.fetch("host", req))
          ngx.say(var.fetch("uri", req))
