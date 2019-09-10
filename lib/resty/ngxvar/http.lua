@@ -1,14 +1,15 @@
-local get_request = require("resty.core.base").get_request
-local get_string_buf = require("resty.core.base").get_string_buf
-local ffi = require("ffi")
-local C = ffi.C
-local ffi_string = ffi.string
-local ngx = ngx
-local ngx_var = ngx.var
-local str_t = ffi.new("ngx_str_t[1]")
-local pcall = pcall
-local num_type = {}
-local str_buf = get_string_buf(1024)
+local get_request   = require("resty.core.base").get_request
+local get_string_buf= require("resty.core.base").get_string_buf
+local ffi           = require("ffi")
+local C             = ffi.C
+local ffi_string    = ffi.string
+local ngx           = ngx
+local ngx_var       = ngx.var
+local str_t         = ffi.new("ngx_str_t[1]")
+local pcall         = pcall
+local num_type      = {}
+local tonumber      = tonumber
+local str_buf       = get_string_buf(1024)
 
 
 ffi.cdef([[

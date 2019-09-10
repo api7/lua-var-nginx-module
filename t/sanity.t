@@ -5,6 +5,7 @@ use Test::Nginx::Socket::Lua 'no_plan';
 repeat_each(2);
 no_diff();
 no_long_string();
+log_level('info');
 
 our $HttpConfig = <<"_EOC_";
     resolver ipv6=off local=on;
@@ -73,7 +74,7 @@ foo.com
 --- request
 GET /t
 --- error_log
-301 type: number
+301 type: string
 --- error_code: 301
 
 
@@ -209,7 +210,7 @@ qr/upstream_connect_time: 0\.\d+ while logging request/
 --- request
 GET /t
 --- error_log
-upstream_response_time: nilnot found while logging request
+upstream_response_time: nil
 
 
 
