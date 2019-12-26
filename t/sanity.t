@@ -229,3 +229,75 @@ GET /t/test/bar
 [error]
 --- response_body
 http
+
+
+
+=== TEST 12: `GET` from `request_method`
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.say(var.fetch("request_method"))
+        }
+    }
+--- request
+GET /t
+--- no_error_log
+[error]
+--- response_body
+GET
+
+
+
+=== TEST 13: `POST` from `request_method`
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.say(var.fetch("request_method"))
+        }
+    }
+--- request
+POST /t
+--- no_error_log
+[error]
+--- response_body
+POST
+
+
+
+=== TEST 14: `PUT` from `request_method`
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.say(var.fetch("request_method"))
+        }
+    }
+--- request
+PUT /t
+--- no_error_log
+[error]
+--- response_body
+PUT
+
+
+
+=== TEST 14: `DELETE` from `request_method`
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            local var = require("resty.ngxvar")
+            ngx.say(var.fetch("request_method"))
+        }
+    }
+--- request
+DELETE /t
+--- no_error_log
+[error]
+--- response_body
+DELETE
