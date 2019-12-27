@@ -286,7 +286,7 @@ PUT
 
 
 
-=== TEST 14: `DELETE` from `request_method`
+=== TEST 15: `DELETE` from `request_method`
 --- http_config eval: $::HttpConfig
 --- config
     location /t {
