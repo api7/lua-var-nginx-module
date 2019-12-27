@@ -238,7 +238,7 @@ http
     location /t {
         content_by_lua_block {
             local var = require("resty.ngxvar")
-            ngx.say(var.fetch("request_method"))
+            ngx.say(var.fetch("method"))
         }
     }
 --- request
@@ -256,7 +256,7 @@ GET
     location /t {
         content_by_lua_block {
             local var = require("resty.ngxvar")
-            ngx.say(var.fetch("request_method"))
+            ngx.say(var.fetch("method"))
         }
     }
 --- request
@@ -274,7 +274,7 @@ POST
     location /t {
         content_by_lua_block {
             local var = require("resty.ngxvar")
-            ngx.say(var.fetch("request_method"))
+            ngx.say(var.fetch("method"))
         }
     }
 --- request
@@ -292,7 +292,7 @@ PUT
     location /t {
         content_by_lua_block {
             local var = require("resty.ngxvar")
-            ngx.say(var.fetch("request_method"))
+            ngx.say(var.fetch("method"))
         }
     }
 --- request

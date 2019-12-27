@@ -165,16 +165,6 @@ ngx_http_lua_var_ffi_scheme(ngx_http_request_t *r, ngx_str_t *scheme)
     return NGX_OK;
 }
 
-ngx_int_t
-ngx_http_lua_var_ffi_request_method(ngx_http_request_t *r, ngx_str_t *request_method)
-{
-    request_method->data = r->method_name.data;
-    request_method->len  = r->method_name.len;
-
-    return NGX_OK;
-}
-
-
 /**
  * only for checking
  */
