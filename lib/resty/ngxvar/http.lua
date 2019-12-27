@@ -28,7 +28,7 @@ int ngx_http_lua_var_ffi_scheme(ngx_http_request_t *r, ngx_str_t *scheme);
 
 local var_patched = pcall(function() return C.ngx_http_lua_var_ffi_test() end)
 local vars = {
-    method = ngx.req.get_method,
+    request_method = ngx.req.get_method,
 }
 
 
