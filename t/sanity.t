@@ -74,7 +74,7 @@ foo.com
 --- request
 GET /t
 --- error_log
-301 type: string
+301 type: number
 --- error_code: 301
 
 

@@ -15,7 +15,6 @@ local str_buf       = get_string_buf(1024)
 ffi.cdef([[
 int ngx_http_lua_var_ffi_uri(ngx_http_request_t *r, ngx_str_t *uri);
 int ngx_http_lua_var_ffi_host(ngx_http_request_t *r, ngx_str_t *host);
-int ngx_http_lua_var_ffi_test();
 int ngx_http_lua_var_ffi_remote_addr(ngx_http_request_t *r,
     ngx_str_t *remote_addr);
 int ngx_http_lua_var_ffi_request_time(ngx_http_request_t *r,
@@ -26,7 +25,7 @@ int ngx_http_lua_var_ffi_scheme(ngx_http_request_t *r, ngx_str_t *scheme);
 ]])
 
 
-local var_patched = pcall(function() return C.ngx_http_lua_var_ffi_test() end)
+local var_patched = pcall(function () return C.ngx_http_lua_var_ffi_uri end)
 local vars = {
     request_method = ngx.req.get_method,
 }
@@ -142,9 +141,7 @@ for _, name in ipairs({"request_length", "bytes_sent"}) do
 end
 
 
-local _M = {
-    _version = 0.1,
-}
+local _M = {}
 
 
 function _M.request()
