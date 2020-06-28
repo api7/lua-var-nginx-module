@@ -14,3 +14,10 @@ install:
 
 test:
 	PATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r $(test)
+
+### lint:             Lint Lua source code
+.PHONY: lint
+lint:
+	luacheck -q lib
+	lj-releng lib/resty/*.lua
+	lj-releng lib/resty/ngxvar/*.lua
