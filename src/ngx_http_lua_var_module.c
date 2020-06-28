@@ -97,7 +97,6 @@ ngx_int_t
 ngx_http_lua_var_ffi_upstream_response_time(ngx_http_request_t *r,
     unsigned char *buf, int type)
 {
-    u_char                     *p;
     size_t                      len;
     ngx_uint_t                  i;
     ngx_msec_int_t              ms, total_ms;
@@ -163,14 +162,4 @@ ngx_http_lua_var_ffi_scheme(ngx_http_request_t *r, ngx_str_t *scheme)
     scheme->data = (u_char *) "http";
 
     return NGX_OK;
-}
-
-
-/**
- * only for checking
- */
-ngx_int_t
-ngx_http_lua_var_ffi_test()
-{
-    return 0;
 }
