@@ -5,10 +5,13 @@ local C             = ffi.C
 local ffi_string    = ffi.string
 local ngx           = ngx
 local ngx_var       = ngx.var
+local re_gmatch     = ngx.re.gmatch
 local str_t         = ffi.new("ngx_str_t[1]")
 local pcall         = pcall
 local num_type      = {}
+local ups_num_type  = {}
 local tonumber      = tonumber
+local str_find      = string.find
 local str_buf       = get_string_buf(1024)
 
 
@@ -107,19 +110,19 @@ end
 vars.upstream_response_time = function (r)
     return upstream_response_time(r, 0)
 end
-num_type.upstream_response_time = true
+ups_num_type.upstream_response_time = true
 
 
 vars.upstream_header_time = function (r)
     return upstream_response_time(r, 1)
 end
-num_type.upstream_header_time = true
+ups_num_type.upstream_header_time = true
 
 
 vars.upstream_connect_time = function (r)
     return upstream_response_time(r, 2)
 end
-num_type.upstream_connect_time = true
+ups_num_type.upstream_connect_time = true
 
 
 function vars.scheme(r)
@@ -144,6 +147,11 @@ end
 local _M = {}
 
 
+function _M.enable_patch(state)
+    var_patched = state
+end
+
+
 function _M.request()
     local r = get_request()
     if not r then
@@ -154,12 +162,41 @@ function _M.request()
 end
 
 
+local function sum_upstream_num(s)
+    local idx = str_find(s, " ", 1, true)
+    if not idx then
+        -- fast path
+        return tonumber(s)
+    end
+
+    local sum = 0
+    local iterator, err = re_gmatch(s, [[(\d+(.\d+)?)]], "jo")
+    if not iterator then
+        ngx.log(ngx.ERR, "failed to create iterator: ", err)
+        return nil
+    end
+
+    while true do
+        local val = iterator()
+        if not val then
+            break
+        end
+
+        sum = sum + tonumber(val[1])
+    end
+
+    return sum
+end
+
+
 function _M.fetch(name, request)
     local method = vars[name]
 
     if not var_patched or not method then
         if num_type[name] then
             return tonumber(ngx_var[name])
+        elseif ups_num_type[name] then
+            return sum_upstream_num(ngx_var[name])
         end
 
         return ngx_var[name]
