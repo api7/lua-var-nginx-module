@@ -163,6 +163,10 @@ end
 
 
 local function sum_upstream_num(s)
+    if type(s) ~= "string" then
+        return s
+    end
+
     local idx = str_find(s, " ", 1, true)
     if not idx then
         -- fast path
