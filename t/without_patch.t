@@ -109,3 +109,17 @@ number
 number
 102.023
 103.223
+
+
+
+=== TEST 4: check if value is nil before conversion
+--- config
+    location /t {
+        content_by_lua_block {
+            package.loaded.mock.upstream_header_time = nil
+            local var = require("resty.ngxvar")
+            ngx.say(var.fetch("upstream_header_time"))
+        }
+    }
+--- response_body
+nil
